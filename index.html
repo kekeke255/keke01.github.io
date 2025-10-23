@@ -1,0 +1,132 @@
+
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <title>炫酷文件夹效果</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background: #0f0c29;
+                background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+                font-family: 'Microsoft YaHei', sans-serif;
+            }
+            #particles-js {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+            .content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                color: white;
+                z-index: 100;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            }
+            h1 {
+                font-size: 4em;
+                margin-bottom: 20px;
+                background: linear-gradient(45deg, #FF5252, #ffffff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: shine 3s infinite alternate;
+            }
+            @keyframes shine {
+                0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); }
+                100% { text-shadow: 0 0 20px #FF5252, 0 0 30px #FF5252; }
+            }
+            .timestamp {
+                font-size: 1.2em;
+                opacity: 0.8;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="particles-js"></div>
+        <div class="content">
+            <h1>哈哈B</h1>
+            <div class="timestamp">创建时间: 2025-09-03 04:54:11</div>
+        </div>
+        
+        <script>
+            // 精简的粒子系统
+            document.addEventListener('DOMContentLoaded', function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                document.getElementById('particles-js').appendChild(canvas);
+                
+                const particles = [];
+                const particleCount = 150;
+                const color = "#FF5252";
+                
+                // 创建粒子
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 3 + 1,
+                        speed: Math.random() * 2 + 0.5,
+                        angle: Math.random() * Math.PI * 2,
+                        distance: Math.random() * 100 + 50
+                    });
+                }
+                
+                // 动画循环
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    particles.forEach(p => {
+                        // 更新位置
+                        p.x += Math.cos(p.angle) * p.speed;
+                        p.y += Math.sin(p.angle) * p.speed;
+                        
+                        // 边界检查
+                        if (p.x < 0 || p.x > canvas.width) p.angle = Math.PI - p.angle;
+                        if (p.y < 0 || p.y > canvas.height) p.angle = -p.angle;
+                        
+                        // 绘制粒子
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                        
+                        // 绘制连线
+                        particles.forEach(other => {
+                            const dx = p.x - other.x;
+                            const dy = p.y - other.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (dist < p.distance) {
+                                ctx.beginPath();
+                                ctx.strokeStyle = color;
+                                ctx.globalAlpha = 1 - dist/p.distance;
+                                ctx.lineWidth = 0.5;
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(other.x, other.y);
+                                ctx.stroke();
+                                ctx.globalAlpha = 1;
+                            }
+                        });
+                    });
+                    
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
+                
+                // 窗口大小调整
+                window.addEventListener('resize', function() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                });
+            });
+        </script>
+    </body>
+    </html>
+    
